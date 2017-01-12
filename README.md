@@ -35,7 +35,7 @@ The main files to run the program are
   - UCR_TSI.java
 
 ## Example 1, Running TSI on UCR dataset 50words. 
-Use the file UCR_TSI.java or SITS_TSI.java
+Run UCR_TSI.java or SITS_TSI.java
 
 Assuming using Eclipse, go to Run Configurations > Arguments 
 
@@ -54,7 +54,7 @@ The program arguments are
 Alternatively, can change these parameters individually in the code
 
 ## Example 2, Running NNDTW on UCR dataset 50words. 
-Use the file UCR_NNDTW.java, SITS_NNDTW.java or SITS_NNED.java (if NNED, there will be no warping window)
+Run UCR_NNDTW.java, SITS_NNDTW.java or SITS_NNED.java (if NNED, there will be no warping window)
 
 Assuming using Eclipse, go to Run Configurations > Arguments 
 
