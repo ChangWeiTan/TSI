@@ -22,7 +22,7 @@ Before starting the experiment, ensure that these files and folders exist in you
   1. Output folder: outputs/L experiment exists in your project directory
   2. SITS folder: dataset/SITS_2006_NDVI_C/SITS1M_fold*fold number* (e.g.dataset/SITS_2006_NDVI_C/SITS1M_fold1)
   3. UCR folder: dataset/UCR_Time_Series_Archive/*UCR datasets name*
-  4. Also, make sure that in the dataset folders, you have a csv file for the properties of the dataset. The file should have the   following format: nb of class,size of training set,size of testing set,time series length,warping window. Check the UCR Time Series website, http://www.cs.ucr.edu/~eamonn/time_series_data/ for the properties of each dataset. For SITS, the properties are 24,900000,100000,46,4. Feel free to change these parameters to suit your experiments. 
+  4. Also, make sure that in the dataset folders, you have a csv file for the properties of the dataset. The file should have the   following format: "nb of class,size of training set,size of testing set,time series length,warping window". Check the UCR Time Series website, http://www.cs.ucr.edu/~eamonn/time_series_data/ for the properties of each dataset. For SITS, the properties are "24,900000,100000,46,4". Feel free to change these parameters to suit your experiments. 
   5. Exact indices of 1NN-DTW using best warping window: index1NN/*SITS or UCR*/*SITS1M_fold#_1NN_LB_index1NN.csv or UCRDataset_1NN_LB_index1NN.csv*. The indices are sorted in the order downloaded from the UCR Time Series website. 
 
 The main files to run the experiments are
