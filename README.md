@@ -1,6 +1,8 @@
 # TSI
 TSI: Indexing and classifying gigabytes of time series under time warping.
 
+Classifying large time series dataset by searching through a hierarchical k-means tree with Dynamic Time Warping. For more information about the theory behind the algorithm, refer to the paper **Indexing and classifying gigabytes of time series under time warping**
+
 # Preamble
 This is the source code for the work published in SDM 2017: Indexing and classifying gigabytes of time series under time warping
 
