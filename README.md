@@ -47,6 +47,7 @@ The program arguments are
   8. Number of results to record before seeing 1st candidate  : 5
   9. Number of time series to examine per query               : 10
   10. Warping window size (in terms of length)                : 10
+
 Alternatively, can change these parameters individually in the code
 
 Example 2, Running NNDTW experiment on UCR dataset 50words. 
@@ -57,6 +58,7 @@ The program arguments are
   3. Test number                                              : 10
   4. Candidate intervals to record results                    : 10
   5. Warping window size (in terms of length)                 : 10
+
 Alternatively, can change these parameters individually in the code
 
 The results will be stored in outputs/L experiment/*dataset name*_*experiment*.csv
