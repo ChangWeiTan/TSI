@@ -19,7 +19,7 @@ When using this repository, please cite:
 
 If you want to use the code or found any bug in the code, please drop me an email at chang.tan@monash.edu. Thanks!
 
-# Demo
+# Running the experiments
 Before starting the experiment, ensure that these files and folders exist in your project directory which can be obtained from https://cloudstor.aarnet.edu.au/plus/index.php/s/pRLVtQyNhxDdCoM and https://drive.google.com/open?id=0B8Cg6Izm3IJybWxnWDJPeWZQWVk 
   1. Output folder: outputs/L experiment exists in your project directory
   2. SITS folder: dataset/SITS_2006_NDVI_C/SITS1M_fold*fold number* (e.g.dataset/SITS_2006_NDVI_C/SITS1M_fold1)
