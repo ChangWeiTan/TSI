@@ -1,7 +1,20 @@
 # TSI
 TSI: Indexing and classifying gigabytes of time series under time warping.
+
 This is the source code for the work published in SDM 2017: Indexing and classifying gigabytes of time series under time warping
+
 Authors: Chang Wei Tan, Geoffrey I. Webb, Francois Petitjean
+
+When using this repository, please cite:
+```
+@INPROCEEDINGS{Tan2017-SDM,
+  author = {Tan, Chang Wei and Webb, Geoffrey I. and Petitjean, Francois},
+  title = {Indexing and classifying gigabytes of time series under time warping},
+  booktitle = {SIAM International Conference on Data Mining},
+  year = 2017,
+  pages = {1--10}
+}
+```
 
 If you want to use the code or found any bug in the code, please drop me an email at chang.tan@monash.edu. Thanks!
 
