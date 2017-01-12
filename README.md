@@ -1,6 +1,7 @@
 # TSI
 TSI: Indexing and classifying gigabytes of time series under time warping.
 
+# Preamble
 This is the source code for the work published in SDM 2017: Indexing and classifying gigabytes of time series under time warping
 
 Authors: Chang Wei Tan, Geoffrey I. Webb, Francois Petitjean
@@ -18,6 +19,7 @@ When using this repository, please cite:
 
 If you want to use the code or found any bug in the code, please drop me an email at chang.tan@monash.edu. Thanks!
 
+# Demo
 Before starting the experiment, ensure that these files and folders exist in your project directory which can be obtained from https://cloudstor.aarnet.edu.au/plus/index.php/s/pRLVtQyNhxDdCoM and https://drive.google.com/open?id=0B8Cg6Izm3IJybWxnWDJPeWZQWVk 
   1. Output folder: outputs/L experiment exists in your project directory
   2. SITS folder: dataset/SITS_2006_NDVI_C/SITS1M_fold*fold number* (e.g.dataset/SITS_2006_NDVI_C/SITS1M_fold1)
@@ -26,16 +28,15 @@ Before starting the experiment, ensure that these files and folders exist in you
   5. Exact indices of 1NN-DTW using best warping window: index1NN/*SITS or UCR*/*SITS1M_fold#_1NN_LB_index1NN.csv or UCRDataset_1NN_LB_index1NN.csv*. The indices are sorted in the order downloaded from the UCR Time Series website. 
 
 The main files to run the experiments are
-  SITS_NNDTW.java
-  SITS_NNED.java
-  SITS_TSI.java
-  UCR_NNDTW.java
-  UCR_TSI.java
-  
-To run the experiments: 
+  - SITS_NNDTW.java
+  - SITS_NNED.java
+  - SITS_TSI.java
+  - UCR_NNDTW.java
+  - UCR_TSI.java
 
-Example 1, Running TSI experiment on UCR dataset 50words. 
+## Example 1, Running TSI experiment on UCR dataset 50words. 
 Assuming using Eclipse, go to Run Configurations > Arguments 
+
 The program arguments are 
   1. Project path                                             : *project directory*/src
   2. Dataset name                                             : 50words / change to SITS1M_fold# for SITS 
@@ -50,8 +51,9 @@ The program arguments are
 
 Alternatively, can change these parameters individually in the code
 
-Example 2, Running NNDTW experiment on UCR dataset 50words. 
+## Example 2, Running NNDTW experiment on UCR dataset 50words. 
 Assuming using Eclipse, go to Run Configurations > Arguments 
+
 The program arguments are 
   1. Project path                                             : *project directory*/src
   2. Dataset name                                             : 50words / change to SITS1M_fold# for SITS 
