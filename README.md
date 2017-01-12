@@ -20,6 +20,7 @@ The main files to run the experiments are
   UCR_TSI.java
   
 To run the experiments: 
+
 Example 1, Running TSI experiment on UCR dataset 50words. 
 Assuming using Eclipse, go to Run Configurations > Arguments 
 The program arguments are 
