@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (C) 2017 Chang Wei Tan
+ * Copyright (C) 2017 Francois Petitjean, Chang Wei Tan
  * 
  * This file is part of TSI.
  * 
