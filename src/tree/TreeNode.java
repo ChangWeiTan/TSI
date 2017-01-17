@@ -22,133 +22,60 @@ import tools.Tools;
 
 public class TreeNode implements java.io.Serializable {
 	/* Tree Node
-	 * This is a class for a node of the Hierarchical K-Means Tree
-	 * It is a general tree structure
 	 * 
-	 * Last modified: 12/01/2017
+	 * Last modified: 14/01/2017
 	 */
 	private static final Tools tools = new Tools();		// tools for the functions
 	private static final long serialVersionUID = 1L;	
-	private static final int NA = -1;					// constant for not available
+	private static final int nil = -1;					// constant for not available
 	
 	private boolean thisIsRoot = false; 				// indication if this node is root
 	private boolean thisIsLeaf = false; 				// indication if this node is leaf
 	private double[] centroid = null;					// stores centroid of that cluster
-	private int centroidLabel = NA;						// stores class for each centroid
-	private int centroidIndex = NA;
+	private int centroidLabel = nil;					// stores class for each centroid
+	private int centroidIndex = nil;
     private ArrayList<Integer> dataLabel = null;		// stores class for each data points
     private ArrayList<Integer> dataIndex = null;		// stores data index in training set
     private ArrayList<TreeNode> children = new ArrayList<TreeNode>();	// children nodes of that cluster
-    private double[][] wedges = null;
+    private double[][] wedge = null;
     private int nbTimeseries = 0;
     
-    /* Constructor */
     public TreeNode() {	
     	thisIsRoot = false;
     	thisIsLeaf = false;
     }
     
-    /* Methods */
     public final void addChild(final TreeNode child) {
 		children.add(child);
     }
     
     public final void addWedge(final double[][] wedge) {
-    	wedges = wedge;
+    	this.wedge = wedge;
     }
-    
-    public final void createNonLeaf(final double[] Centroid, final ArrayList<Integer> Label) {
+        
+    public final void createNonLeaf(final double[] centroid, final ArrayList<Integer> dataLabel, final ArrayList<Integer> dataIndex) {
     	// initialize array then copy new centroid
-    	centroid = new double[Centroid.length];
-    	centroid = Centroid;
-    	
-    	centroidLabel = tools.mode(Label);
-    }
-    
-    public final void createNonLeaf(final double[] Centroid, final ArrayList<Integer> Label, final ArrayList<Integer> dataIndex) {
-    	// initialize array then copy new centroid
-    	this.dataIndex = dataIndex;
-    	centroid = new double[Centroid.length];
-    	centroid = Centroid;
-    	
-    	centroidLabel = tools.mode(Label);
-    }
-    
-    public final void createNonLeaf(final double[] Centroid, final int Label, final int dataIndex) {
-    	// initialize array then copy new centroid
-    	this.centroidIndex = dataIndex;
-    	centroid = new double[Centroid.length];
-    	centroid = Centroid;
-    	
-    	centroidLabel = Label;
-    }
-    
-    public final void createNonLeaf(final ArrayList<Integer> Label, final ArrayList<Integer> dataIndex, final int num) {
-    	this.dataIndex = dataIndex;
-    	
-    	centroidLabel = tools.mode(Label);
-    	
-    	nbTimeseries = num;
-    }
-    
-    public final void createNonLeaf(final int centroidLabel, final int centroidIndex, final int num, final ArrayList<Integer> dataLabel, final ArrayList<Integer> dataIndex) {
-    	this.centroidIndex = centroidIndex;
-    	this.centroidLabel = centroidLabel;
+    	this.centroid = new double[centroid.length];
+    	this.centroid = centroid;
     	this.dataIndex = dataIndex;
     	this.dataLabel = dataLabel;
-    	
-    	nbTimeseries = num;
-    }
-    
-    public final void createNonLeaf(final double[] Centroid) {
-    	// initialize array then copy new centroid
-    	centroid = new double[Centroid.length];
-    	centroid = Centroid;
+    	this.centroidLabel = tools.mode(dataLabel);
     }
     
     public final void createLeaf(final ArrayList<Integer> dataIndex, final ArrayList<Integer> dataClass) {
     	this.thisIsLeaf = true;
     	this.dataIndex = new ArrayList<Integer>();
     	this.dataLabel = new ArrayList<Integer>();
-    	
-    	// initialize array then copy index
     	this.dataIndex.addAll(dataIndex);				
-    			
-    	// initialize array then copy data one by one
     	this.dataLabel.addAll(dataClass);
     }
-    
-    public final void createLeaf(final int dataIndex, final int dataClass) {
-    	this.thisIsLeaf = true;
-    	this.dataIndex = new ArrayList<Integer>();
-    	this.dataLabel = new ArrayList<Integer>();
-    	
-    	// initialize array then copy index
-    	this.dataIndex.add(dataIndex);				
-    			
-    	// initialize array then copy data one by one
-    	this.dataLabel.add(dataClass);
-    }
-    
-    public final void createLeaf(final int indexOfData, final int TrainClass, final int Label) {
-    	this.thisIsLeaf = true;
-    	
-    	// initialize array then copy index
-    	this.dataIndex = new ArrayList<Integer>();		
-    	this.dataIndex.add(indexOfData);
-    	
-    	this.centroidLabel = Label;
-    	
-    	this.dataLabel = new ArrayList<Integer>();			
-    	this.dataLabel.add(TrainClass);
-    }
-    
+        
     public final double[] getCentroid() {
     	return this.centroid;
     }
     
     public final double[][] getWedges() {
-    	return this.wedges;
+    	return this.wedge;
     }
 
     public final int getCentroidLabel() {
