@@ -23,24 +23,23 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Random;
 
 public class Tools {
 	/* Tools
 	 * This is a class for miscellaneous functions 
 	 * 
-	 * Last modified: 12/01/2017
+	 * Last modified: 14/01/2017
 	 */
-	private ArrayList<double[]> TS;
+	private ArrayList<double[]> timeseries;
 	private ArrayList<Integer> dataLabel;
 	private ArrayList<Integer> dataIndex;
 	
-	public final double distanceTo(final double a, final double b) {
+	public final double squaredEuclidean(final double a, final double b) {
 		return (a - b) * (a - b);
 	}
 	
-	public final double Min3(final double a, final double b, final double c) {
+	public final double min3(final double a, final double b, final double c) {
 		if (a < b) {
 			if (a < c) 
 				return a;
@@ -54,8 +53,8 @@ public class Tools {
 		}
 	}
 	
-	public final int ArgMin3(final double a, final double b, final double c) {
-		if (a < b) {
+	public final int argMin3(final double a, final double b, final double c) {
+		if (a < b) 	{
 			if (a < c) 
 				return 0;
 			else 
@@ -109,7 +108,7 @@ public class Tools {
 		QuickSort.sort(numbers, index, low, high);
 	}
 	
-	public final int[] mapRandArray(final int[] array, final List<Integer> index, final int[] mapIndex) {
+	public final int[] mapRandArray(final int[] array, final ArrayList<Integer> index, final int[] mapIndex) {
 		final int[] tempArray = new int[array.length];
 		int i, j;
 		
@@ -134,7 +133,7 @@ public class Tools {
 		for (i = 0; i < array.length; i++){
 			// find the map index
 			for (j = 0; j < mapIndex.length; j++) {
-				if (array[index[i]] == mapIndex[j]) {
+				if (array[index[i]] == mapIndex[j])	{
 					tempArray[i] = j;
 					break;
 				}
@@ -144,18 +143,15 @@ public class Tools {
 	}
 	
 	public final void readDatasetCSV(final String csvFile, final int sizeDataset) {
-		TS = new ArrayList<double[]>(); 
+		timeseries = new ArrayList<double[]>(); 
 		dataLabel = new ArrayList<Integer>();
 		dataIndex = new ArrayList<Integer>();
 		
 		BufferedReader br = null;
 		String line = "";
-		String csvSplitby = ",";
-		String[] data;
-		double[] ts;
+		String delimiter = ",";
 		
 		int nbTimeseries = 0;
-		int i;
 		double maxlen = Double.NEGATIVE_INFINITY;
 		double minlen = Double.POSITIVE_INFINITY;
 		
@@ -163,21 +159,20 @@ public class Tools {
 		try {
 			br = new BufferedReader(new FileReader(csvFile),1024*1024*100);
 			while ((line = br.readLine()) != null) {
-				data = line.split(csvSplitby);
-				ts = new double[data.length - 1];
+				final String[] data = line.split(delimiter);
+				final double[] ts = new double[data.length - 1];
 				maxlen = Math.max(maxlen, data.length-1);
 				minlen = Math.min(minlen, data.length-1);
 				
 				dataIndex.add(nbTimeseries);
 				dataLabel.add(Integer.parseInt(data[0]));
 		
-				for (i = 1; i < data.length; i++) 
+				for (int i = 1; i < data.length; i++) 
 					ts [i-1] = Double.parseDouble(data[i]);
 				
-				this.TS.add(ts);
+				this.timeseries.add(ts);
 				nbTimeseries++;
 			}
-			System.out.println("Maxlen: " + maxlen + ", Minlen: " + minlen);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -192,13 +187,13 @@ public class Tools {
 			}
 		}
 		
-		TS.trimToSize();
+		timeseries.trimToSize();
 		dataIndex.trimToSize();
 		dataLabel.trimToSize();
 	}
 	
 	public final ArrayList<double[]> getTimeseriesAftRead() {
-		return TS;
+		return timeseries;
 	}
 	
 	public final ArrayList<Integer> getDataLabelAftRead() {

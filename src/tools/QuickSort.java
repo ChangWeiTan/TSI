@@ -19,9 +19,8 @@ package tools;
 
 public class QuickSort {
 	/* Quick sort
-	 * This is a class for Quick Sort
 	 * 
-	 * Last modified: 12/01/2017
+	 * Last modified: 14/01/2017
 	 */
 	public final static void sort(double[] numbers, int[] index, final int low, final int high) {
 		int i = low, j = high;
@@ -45,7 +44,7 @@ public class QuickSort {
 			sort(numbers, index, i, high);
 	}
 	
-	private final static void swap(double[] numbers, int[] index, final int i, final int j)	{
+	private final static void swap(double[] numbers, int[] index, final int i, final int j) {
 		final double tempNum = numbers[i];
 		final int tempIndex = index[i];
 		numbers[i] = numbers[j];
