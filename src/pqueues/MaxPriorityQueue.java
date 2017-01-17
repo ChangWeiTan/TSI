@@ -21,10 +21,10 @@ public class MaxPriorityQueue {
 	/* Max Priority Queue
 	 * This is a max priority queue class for storing nn results
 	 * 
-	 * Last modified: 12/01/2017
+	 * Last modified: 14/01/2017
 	 */
 	// properties of the queue
-	private final int NIL = -1;		// constant for not available
+	private final int nil = -100;	// constant for not available
 	private int lastElement;		// last element of the queue
 	private int capacity;			// capacity of the queue
 	private double[] distance;		// distance, used to sort the queue
@@ -34,23 +34,18 @@ public class MaxPriorityQueue {
 	private int topDataIndex;		// first data index
 	
 	public MaxPriorityQueue(final int c) {
-		capacity = c+1;						
+		capacity = c+1;		
 		distance = new double[capacity];
 		dataIndex = new int[capacity];
 		lastElement = 0;
 	}
 	
-	public final void insert(final double d, final int i) {
-		/* Insert
-		 * This is the enqueue function of the priority queue
-		 * Inputs: 
-		 * 	d	: distance to query
-		 * 	i 	: index of the branch
-		 */
-		
+	public final void insert(final double d, final int i) {		
 		// increment counter
 		if (lastElement < capacity-1) {
 			lastElement++;
+		} else {
+			throw new RuntimeException("Queue is full!");
 		}
 		
 		// insert to the last element
@@ -68,10 +63,8 @@ public class MaxPriorityQueue {
 	}
 	
 	public final void pop() {
-		/* Pop
-		 * This is the dequeue function of the priority queue
-		 * The dequeued data is stored in global variable
-		 */
+		if (lastElement == 0)
+			throw new RuntimeException("Queue is empty!");
 		
 		// get dequeued data
 		topDistance = distance[1];
@@ -106,7 +99,6 @@ public class MaxPriorityQueue {
 	}
 	
 	public final double firstDistance() {
-		// get the distance of the first element without dequeueing
 		if (isEmpty())
 			return Double.POSITIVE_INFINITY;
 		else
@@ -114,13 +106,12 @@ public class MaxPriorityQueue {
 	} 
 	
 	public final double popDistance() {
-		// get the distance after dequeueing
 		return topDistance;
 	}
 	
 	public final int firstDataIndex() {
 		if (isEmpty())
-			return NIL;
+			return nil;
 		else
 			return dataIndex[1];
 	}
