@@ -15,6 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with TSI.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
+
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -24,20 +25,17 @@ import datasets.Dataset;
 import tools.*;
 import tree.TreeNode;
 
-public class L_UCR_TSI {
+public class UCR_TSI {
 	/* L_UCR_TSI
 	 * This is a class for TSI Experiment on UCR datasets
 	 * 
-	 * Last modified: 12/01/2017
+	 * Last modified: 14/01/2017
 	 */
 	public static void main (String[] args) {
 		final Tools tools = new Tools();
 		String projectPath = "";
-		String datasetName = "Adiac";	
-		
-		if (args.length > 0) {projectPath = args[0] + "/";}
-		if (args.length > 1) {datasetName = args[1];}
-		int K = 3;
+		String datasetName = "ArrowHead";	
+		int K = 6;
 		int L = 5;
 		int Imax = 10;
 		int k = 1;			
@@ -45,18 +43,19 @@ public class L_UCR_TSI {
 		int testNum = 10;
 		int step = 1;
 		int nbPre = 3;
-		if (args.length > 2) {
-			K = Integer.parseInt(args[2]);
-			Imax = Integer.parseInt(args[3]);
-			k = Integer.parseInt(args[4]);
-			testNum = Integer.parseInt(args[5]);
-			step = Integer.parseInt(args[6]);
-			nbPre = Integer.parseInt(args[7]);
-		}
+		
+		if (args.length > 0) {projectPath = args[0] + "/";}
+		if (args.length > 1) {datasetName = args[1];}
+		if (args.length > 2) {K = Integer.parseInt(args[2]);}
+		if (args.length > 3) {Imax = Integer.parseInt(args[3]);}
+		if (args.length > 4) {k = Integer.parseInt(args[4]);}
+		if (args.length > 5) {testNum = Integer.parseInt(args[5]);}
+		if (args.length > 6) {step = Integer.parseInt(args[6]);}
+		if (args.length > 7) {nbPre = Integer.parseInt(args[7]);}
 		
 		final Dataset UCR = new Dataset(datasetName);		// tools to read and load UCR dataset
-		UCR.loadTest(projectPath + "dataset/UCR_Time_Series_Archive/");
-		UCR.loadTrain(projectPath + "dataset/UCR_Time_Series_Archive/");
+		UCR.loadTestSet(projectPath + "dataset/UCR_Time_Series_Archive/");
+		UCR.loadTrainSet(projectPath + "dataset/UCR_Time_Series_Archive/");
 		w = UCR.window();
 		L = UCR.trainSize();
 		
@@ -79,28 +78,31 @@ public class L_UCR_TSI {
 		int minPre = UCR.testSize();
 		
 		for (int i = 0; i < testNum; i++) {
-			ArrayList<double[]> TRAIN = UCR.TrainSet();
-			ArrayList<Integer> TrainClass = UCR.ClassTrain();
-			ArrayList<Integer> TrainIndex = UCR.IndexTrain();
-			final int[] TrainRandIndex = UCR.randomize(TRAIN, TrainClass, TrainIndex);
-			TRAIN = UCR.extractDataset(TRAIN, TrainRandIndex);
-			TrainClass = UCR.extractLabel(TrainClass, TrainRandIndex);
-			// get testing dataset
-			ArrayList<double[]> TEST = UCR.TestSet();
-			ArrayList<Integer> TestClass = UCR.ClassTest();
-			final ArrayList<Integer> TestIndex = UCR.IndexTest();
-			final int[] TestRandIndex = UCR.randomize(TEST, TestClass, TestIndex);
-			TEST = UCR.extractDataset(TEST, TestRandIndex);
-			TestClass = UCR.extractLabel(TestClass, TestRandIndex);
+			ArrayList<double[]> trainingDataset = UCR.TrainSet();
+			ArrayList<Integer> trainingDatasetClass = UCR.ClassTrain();
+			ArrayList<Integer> trainingDatasetIndex = UCR.IndexTrain();
+			final int[] trainingRandomIndex = UCR.randomize(trainingDataset, trainingDatasetClass, trainingDatasetIndex);
+			trainingDataset = UCR.extractDataset(trainingDataset, trainingRandomIndex);
+			trainingDatasetClass = UCR.extractLabel(trainingDatasetClass, trainingRandomIndex);
+			
+			ArrayList<double[]> testingDataset = UCR.TestSet();
+			ArrayList<Integer> testingDatasetClass = UCR.ClassTest();
+			final ArrayList<Integer> testingDatasetIndex = UCR.IndexTest();
+			final int[] testingRandomIndex = UCR.randomize(testingDataset, testingDatasetClass, testingDatasetIndex);
+			testingDataset = UCR.extractDataset(testingDataset, testingRandomIndex);
+			testingDatasetClass = UCR.extractLabel(testingDatasetClass, testingRandomIndex);
 			
 			final int[] tempIndex = UCR.read1NNIndex(projectPath + "index1NN/UCR/");
-			final int[] index1NN_NNDTW = tools.mapRandArray(tempIndex, TestRandIndex, TrainRandIndex);
+			final int[] actual1NNIndex = tools.mapRandArray(tempIndex, testingRandomIndex, trainingRandomIndex);
 			
 			TreeNode root = new TreeNode();
 			root.setRoot();
-			final ClassifierTSI classifier = new ClassifierTSI(TRAIN, TrainClass, K, k, L, step, stepSize, nbPre);
-			root = classifier.buildTree(root, TRAIN, TrainClass, TrainIndex, Imax, w);
-			final double errorRate = classifier.performance(root, TEST, TestClass, w, index1NN_NNDTW);
+			final ClassifierTSI classifier = new ClassifierTSI(trainingDataset, trainingDatasetClass, K, k, L, step, stepSize, nbPre);
+			final long startTime = System.nanoTime();
+			root = classifier.buildTree(root, trainingDataset, trainingDatasetClass, trainingDatasetIndex, Imax, w);
+			final double buildTime = (double)( (System.nanoTime() - startTime)/1e9);
+			System.out.println("Build time: " + buildTime);
+			final double errorRate = classifier.performance(root, testingDataset, testingDatasetClass, w, actual1NNIndex);
 			final double averageTime = classifier.getAverageQueryTime();
 			final double precision = classifier.getPrecision();
 			final double distComputations = classifier.getDistComputation();
@@ -118,17 +120,16 @@ public class L_UCR_TSI {
 			
 			System.out.println((i+1) + ", Error rate: " + errorRate + ", Average Query Time is: " + averageTime + ", Average Distance Computations: " + distComputations + ", Precision: " + precision);
 		}
-		final String csvFile = projectPath + "outputs/L experiment/" + datasetName + "_TSI_K" + K + ".csv";
-		writeToCsv(csvFile, datasetName, minPre, preError, preTime, preDist,  
-				averageErrorPerQuery, averagePrecisionPerQuery, averageTimePerQuery, averageDistPerQuery, seenSoFar);
+		final String csvFile = projectPath + "outputs/experiments/" + datasetName + "_TSI_K" + K + ".csv";
+		writeToCsv(csvFile, datasetName, minPre, preError, preTime, preDist, averageErrorPerQuery, averagePrecisionPerQuery, averageTimePerQuery, averageDistPerQuery, seenSoFar);
 	}
 	
 	private final static void writeToCsv(final String csvFile, final String datasetName,  final int minPre,
 			final double[][] preError, final double[][] preTime, 
 			final double[][] preDist, final double[][] error, 
 			final double[][] precision, final double[][] time, 
-			final double[][] dist, final int[] seen) {
-		try {
+			final double[][] dist, final int[] seen){
+		try	{
 			FileWriter writer = new FileWriter(csvFile);
 			writer.append(datasetName + '\n');
 			writer.append("Runs,Error rate" + '\n');

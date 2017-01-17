@@ -22,28 +22,25 @@ import java.util.ArrayList;
 import classifiers.ClassifierNNED;
 import datasets.Dataset;
 
-public class L_SITS_NNED {
-	/* L_SITS_NNED
-	 * This is a class for NN-ED Experiment on SITS dataset
+public class SITS_NNED {
+	/* This is for NNED Experiment on SITS dataset
 	 * 
-	 * Last modified: 12/01/2017
+	 * Last modified: 14/01/2017
 	 */
-	public static void main (String[] args) {
+	public static void main (String[] args)  {
 		String projectPath = "";				// project path
 		String datasetName = "SITS1M_fold1";	// dataset name
+		int testNum = 1;
+		int step = 10;
 		
 		if (args.length > 0) {projectPath = args[0] + "/";}
 		if (args.length > 1) {datasetName = args[1];}
-		int testNum = 1;
-		int step = 10;
-		if (args.length > 2) {
-			testNum = Integer.parseInt(args[2]);
-			step = Integer.parseInt(args[3]);
-		}
+		if (args.length > 2) {testNum = Integer.parseInt(args[2]);}
+		if (args.length > 3) {step = Integer.parseInt(args[3]);}
 		
-		final Dataset SITS = new Dataset(datasetName);	
-		SITS.loadTestcsv(projectPath + "dataset/SITS_2006_NDVI_C/");
-		SITS.loadTraincsv(projectPath + "dataset/SITS_2006_NDVI_C/");
+		final Dataset SITS = new Dataset(datasetName);		// tools to read and load SITS dataset
+		SITS.loadTestSetCSV(projectPath + "dataset/SITS_2006_NDVI_C/");
+		SITS.loadTrainSetCSV(projectPath + "dataset/SITS_2006_NDVI_C/");
 		
 		int stepSize = 0;
 		if (step != 1) {stepSize = (int) Math.ceil((double) SITS.trainSize()/step) + 1;}
@@ -55,17 +52,18 @@ public class L_SITS_NNED {
 		int[] seenSoFar = new int[stepSize];
 		
 		for (int i = 0; i < testNum; i++) {
-			ArrayList<double[]> TRAIN = SITS.TrainSet();
-			ArrayList<Integer> TrainClass = SITS.ClassTrain();
-			ArrayList<Integer> TrainIndex = SITS.IndexTrain();
-			TrainIndex = SITS.randomize2(TRAIN, TrainClass, TrainIndex);
-			TRAIN = SITS.getRandDataset();
-			TrainClass = SITS.getRandLabel();
-			ArrayList<double[]> TEST = SITS.TestSet();
-			ArrayList<Integer> TestClass = SITS.ClassTest();
+			ArrayList<double[]> trainingDataset = SITS.TrainSet();
+			ArrayList<Integer> trainingDatasetClass = SITS.ClassTrain();
+			ArrayList<Integer> trainingDatasetIndex = SITS.IndexTrain();
+			trainingDatasetIndex = SITS.randomize2(trainingDataset, trainingDatasetClass, trainingDatasetIndex);
+			trainingDataset = SITS.getRandDataset();
+			trainingDatasetClass = SITS.getRandLabel();
 			
-			final ClassifierNNED classifier = new ClassifierNNED(TRAIN, TrainClass, TrainIndex, step, stepSize);
-			final double errorRate = classifier.performance(TEST, TestClass);
+			ArrayList<double[]> testingDataset = SITS.TestSet();
+			ArrayList<Integer> testingDatasetClass = SITS.ClassTest();
+			
+			final ClassifierNNED classifier = new ClassifierNNED(trainingDataset, trainingDatasetClass, trainingDatasetIndex, step, stepSize);
+			final double errorRate = classifier.performance(testingDataset, testingDatasetClass);
 			final double averageTime = classifier.getAverageQueryTime();
 			final double distComputations = classifier.getDistComputation();
 			
@@ -76,10 +74,10 @@ public class L_SITS_NNED {
 			
 			System.out.println((i+1) + ", Error rate: " + errorRate + ", Average Query Time is: " + averageTime + ", Average Distance Computations: " + distComputations);
 		}
-		final String csvFile = projectPath + "outputs/L experiment/" + datasetName + "_NNED.csv";
+		final String csvFile = projectPath + "outputs/experiments/" + datasetName + "_NNED.csv";
 		writeToCsv(csvFile, datasetName, averageErrorPerQuery, averageTimePerQuery, averageDistPerQuery, seenSoFar);
 	}
-	
+
 	private final static void writeToCsv(final String csvFile, final String datasetName, 
 			final double[][] error, final double[][] time, 
 			final double[][] dist, final int[] seen) {

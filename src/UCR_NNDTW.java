@@ -22,29 +22,26 @@ import java.util.ArrayList;
 import classifiers.ClassifierNNDTW;
 import datasets.Dataset;
 
-public class L_UCR_NNDTW {
-	/* L_UCR_NNDTW
-	 * This is a class for LB_Keogh-NN-DTW Experiment on UCR datasets
+public class UCR_NNDTW {
+	/* This is for LB_Keogh-NN-DTW Experiment on UCR datasets
 	 * 
-	 * Last modified: 12/01/2017
+	 * Last modified: 14/01/2017
 	 */
 	public static void main (String[] args) {
 		String projectPath = "";
 		String datasetName = "ArrowHead";	
-		
-		if (args.length > 0) {projectPath = args[0] + "/";}
-		if (args.length > 1) {datasetName = args[1];}
 		int w = 0;	
 		int testNum = 11;
 		int step = 1;
-		if (args.length > 2) {
-			testNum = Integer.parseInt(args[2]);
-			step = Integer.parseInt(args[3]);
-		}
+		
+		if (args.length > 0) {projectPath = args[0] + "/";}
+		if (args.length > 1) {datasetName = args[1];}
+		if (args.length > 2) {testNum = Integer.parseInt(args[2]);}
+		if (args.length > 3) {step = Integer.parseInt(args[3]);}
 		
 		final Dataset UCR = new Dataset(datasetName);		// tools to read and load UCR dataset
-		UCR.loadTest(projectPath + "dataset/UCR_Time_Series_Archive/");
-		UCR.loadTrain(projectPath + "dataset/UCR_Time_Series_Archive/");
+		UCR.loadTestSet(projectPath + "dataset/UCR_Time_Series_Archive/");
+		UCR.loadTrainSet(projectPath + "dataset/UCR_Time_Series_Archive/");
 		w = UCR.window();
 		
 		if (args.length > 4) {w = Integer.parseInt(args[4]);}
@@ -59,22 +56,22 @@ public class L_UCR_NNDTW {
 		int[] seenSoFar = new int[stepSize];
 		
 		for (int i = 0; i < testNum; i++) {
-			ArrayList<double[]> TRAIN = UCR.TrainSet();
-			ArrayList<Integer> TrainClass = UCR.ClassTrain();
-			ArrayList<Integer> TrainIndex = UCR.IndexTrain();
-			TrainIndex = UCR.randomize2(TRAIN, TrainClass, TrainIndex);
-			TRAIN = UCR.getRandDataset();
-			TrainClass = UCR.getRandLabel();
-			// get testing dataset
-			ArrayList<double[]> TEST = UCR.TestSet();
-			ArrayList<Integer> TestClass = UCR.ClassTest();
-			ArrayList<Integer> TestIndex = UCR.IndexTest();
-			TestIndex = UCR.randomize2(TEST, TestClass, TestIndex);
-			TEST = UCR.getRandDataset();
-			TestClass = UCR.getRandLabel();
+			ArrayList<double[]> trainingDataset = UCR.TrainSet();
+			ArrayList<Integer> trainingDatasetClass = UCR.ClassTrain();
+			ArrayList<Integer> trainingDatasetIndex = UCR.IndexTrain();
+			trainingDatasetIndex = UCR.randomize2(trainingDataset, trainingDatasetClass, trainingDatasetIndex);
+			trainingDataset = UCR.getRandDataset();
+			trainingDatasetClass = UCR.getRandLabel();
+
+			ArrayList<double[]> testingDataset = UCR.TestSet();
+			ArrayList<Integer> testingDatasetClass = UCR.ClassTest();
+			ArrayList<Integer> testingDatasetIndex = UCR.IndexTest();
+			testingDatasetIndex = UCR.randomize2(testingDataset, testingDatasetClass, testingDatasetIndex);
+			testingDataset = UCR.getRandDataset();
+			testingDatasetClass = UCR.getRandLabel();
 			
-			final ClassifierNNDTW classifier = new ClassifierNNDTW(TRAIN, TrainClass, TrainIndex, step, stepSize);
-			final double errorRate = classifier.performance(TEST, TestClass, w);
+			final ClassifierNNDTW classifier = new ClassifierNNDTW(trainingDataset, trainingDatasetClass, trainingDatasetIndex, step, stepSize);
+			final double errorRate = classifier.performance(testingDataset, testingDatasetClass, w);
 			final double averageTime = classifier.getAverageQueryTime();
 			final double distComputations = classifier.getDistComputation();
 			
@@ -85,7 +82,7 @@ public class L_UCR_NNDTW {
 			
 			System.out.println((i+1) + ", Error rate: " + errorRate + ", Average Query Time is: " + averageTime + ", Average Distance Computations: " + distComputations);
 		}
-		final String csvFile = projectPath + "outputs/L experiment/" + datasetName + "_NNDTW.csv";
+		final String csvFile = projectPath + "outputs/experiments/" + datasetName + "_NNDTW.csv";
 		writeToCsv(csvFile, datasetName, averageErrorPerQuery, averageTimePerQuery, averageDistPerQuery, seenSoFar);
 	}
 	

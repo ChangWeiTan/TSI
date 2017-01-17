@@ -24,20 +24,17 @@ import datasets.Dataset;
 import tools.Tools;
 import tree.TreeNode;
 
-public class L_SITS_TSI {
+public class SITS_TSI {
 	public static void main (String[] args) {
 		/* L_SITS_TSI
 		 * This is a class for TSI Experiment on SITS dataset
 		 * 
-		 * Last modified: 12/01/2017
+		 * Last modified: 14/01/2017
 		 */
 		final Tools tools = new Tools();
 		String projectPath = "";
 		String datasetName = "SITS1M_fold1";	
-		
-		if (args.length > 0) {projectPath = args[0] + "/";}
-		if (args.length > 1) {datasetName = args[1];}
-		int K = 3;
+		int K = 1000;
 		int L = 5;
 		int Imax = 10;
 		int k = 1;			
@@ -45,18 +42,19 @@ public class L_SITS_TSI {
 		int testNum = 1;
 		int step = 10;
 		int nbPre = 3;
-		if (args.length > 2) {
-			K = Integer.parseInt(args[2]);
-			Imax = Integer.parseInt(args[3]);
-			k = Integer.parseInt(args[4]);
-			testNum = Integer.parseInt(args[5]);
-			step = Integer.parseInt(args[6]);
-			nbPre = Integer.parseInt(args[7]);
-		}
+		
+		if (args.length > 0) {projectPath = args[0] + "/";}
+		if (args.length > 1) {datasetName = args[1];}
+		if (args.length > 2) {K = Integer.parseInt(args[2]);}
+		if (args.length > 3) {Imax = Integer.parseInt(args[3]);}
+		if (args.length > 4) {k = Integer.parseInt(args[4]);}
+		if (args.length > 5) {testNum = Integer.parseInt(args[5]);}
+		if (args.length > 6) {step = Integer.parseInt(args[6]);}
+		if (args.length > 7) {nbPre = Integer.parseInt(args[7]);}
 		
 		final Dataset SITS = new Dataset(datasetName);		// tools to read and load UCR dataset
-		SITS.loadTestcsv(projectPath + "dataset/SITS_2006_NDVI_C/");
-		SITS.loadTraincsv(projectPath + "dataset/SITS_2006_NDVI_C/");
+		SITS.loadTestSetCSV(projectPath + "dataset/SITS_2006_NDVI_C/");
+		SITS.loadTrainSetCSV(projectPath + "dataset/SITS_2006_NDVI_C/");
 		w = SITS.window();
 		L = SITS.trainSize();
 		
@@ -64,8 +62,8 @@ public class L_SITS_TSI {
 		if (args.length > 9) {w = Integer.parseInt(args[9]);}
 		
 		int stepSize = 0;
-		if (step != 1) {stepSize = (int) Math.ceil((double) L/step) + 1;}
-		else {stepSize = (int) Math.ceil((double) L/step);}
+		if (step != 1) {stepSize = (int) Math.ceil((double) SITS.trainSize()/step) + 1;}
+		else {stepSize = (int) Math.ceil((double) SITS.trainSize()/step);}
 		
 		final double[][] preError = new double[testNum][nbPre];
 		final double[][] preTime = new double[testNum][nbPre];
@@ -79,25 +77,28 @@ public class L_SITS_TSI {
 		int minPre = SITS.testSize();
 		
 		for (int i = 0; i < testNum; i++) {
-			ArrayList<double[]> TRAIN = SITS.TrainSet();
-			ArrayList<Integer> TrainClass = SITS.ClassTrain();
-			ArrayList<Integer> TrainIndex = SITS.IndexTrain();
-			final int[] TrainRandIndex = SITS.randomize(TRAIN, TrainClass, TrainIndex);
-			TRAIN = SITS.extractDataset(TRAIN, TrainRandIndex);
-			TrainClass = SITS.extractLabel(TrainClass, TrainRandIndex);
-			// get testing dataset
-			ArrayList<double[]> TEST = SITS.TestSet();
-			ArrayList<Integer> TestClass = SITS.ClassTest();
-			final ArrayList<Integer> TestIndex = SITS.IndexTest();
+			ArrayList<double[]> trainingDataset = SITS.TrainSet();
+			ArrayList<Integer> trainingDatasetClass = SITS.ClassTrain();
+			ArrayList<Integer> trainingDatasetIndex = SITS.IndexTrain();
+			final int[] trainingRandomIndex = SITS.randomize(trainingDataset, trainingDatasetClass, trainingDatasetIndex);
+			trainingDataset = SITS.extractDataset(trainingDataset, trainingRandomIndex);
+			trainingDatasetClass = SITS.extractLabel(trainingDatasetClass, trainingRandomIndex);
+			
+			ArrayList<double[]> testingDataset = SITS.TestSet();
+			ArrayList<Integer> testingDatasetClass = SITS.ClassTest();
+			final ArrayList<Integer> testingDatasetIndex = SITS.IndexTest();
 			
 			final int[] tempIndex = SITS.read1NNIndex(projectPath + "index1NN/SITS/");
-			final int[] index1NN_NNDTW = tools.mapRandArray(tempIndex, TestIndex, TrainRandIndex);
+			final int[] actual1NNIndex = tools.mapRandArray(tempIndex, testingDatasetIndex, trainingRandomIndex);
 			
 			TreeNode root = new TreeNode();
 			root.setRoot();
-			final ClassifierTSI classifier = new ClassifierTSI(TRAIN, TrainClass, K, k, L, step, stepSize, nbPre);
-			root = classifier.buildTree(root, TRAIN, TrainClass, TrainIndex, Imax, w);
-			final double errorRate = classifier.performance(root, TEST, TestClass, w, index1NN_NNDTW);
+			final ClassifierTSI classifier = new ClassifierTSI(trainingDataset, trainingDatasetClass, K, k, L, step, stepSize, nbPre);
+			final long startTime = System.nanoTime();
+			root = classifier.buildTree(root, trainingDataset, trainingDatasetClass, trainingDatasetIndex, Imax, w);
+			final double buildTime = (double)( (System.nanoTime() - startTime)/1e9);
+			System.out.println("Build time: " + buildTime);
+			final double errorRate = classifier.performance(root, testingDataset, testingDatasetClass, w, actual1NNIndex);
 			final double averageTime = classifier.getAverageQueryTime();
 			final double precision = classifier.getPrecision();
 			final double distComputations = classifier.getDistComputation();
@@ -115,16 +116,15 @@ public class L_SITS_TSI {
 			
 			System.out.println((i+1) + ", Error rate: " + errorRate + ", Average Query Time is: " + averageTime + ", Average Distance Computations: " + distComputations + ", Precision: " + precision);
 		}
-		final String csvFile = projectPath + "outputs/L experiment/" + datasetName + "_TSI_K" + K + "_L" + L + ".csv";
-		writeToCsv(csvFile, datasetName, minPre, preError, preTime, preDist,  
-				averageErrorPerQuery, averagePrecisionPerQuery, averageTimePerQuery, averageDistPerQuery, seenSoFar);
+		final String csvFile = projectPath + "outputs/experiments/" + datasetName + "_TSI_K" + K + "_L" + L + ".csv";
+		writeToCsv(csvFile, datasetName, minPre, preError, preTime, preDist, averageErrorPerQuery, averagePrecisionPerQuery, averageTimePerQuery, averageDistPerQuery, seenSoFar);
 	}
 	
-	private final static void writeToCsv(final String csvFile, final String datasetName, final int minPre,
+	private final static void writeToCsv(final String csvFile, final String datasetName,  final int minPre,
 			final double[][] preError, final double[][] preTime, 
 			final double[][] preDist, final double[][] error, 
 			final double[][] precision, final double[][] time, 
-			final double[][] dist, final int[] seen) {
+			final double[][] dist, final int[] seen){
 		try	{
 			FileWriter writer = new FileWriter(csvFile);
 			writer.append(datasetName + '\n');
