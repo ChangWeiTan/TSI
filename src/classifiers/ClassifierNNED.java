@@ -23,7 +23,7 @@ import similaritymeasures.DistanceMeasures;
 public class ClassifierNNED {
 	/* NNED Classifier
 	 * 
-	 * Last modified: 01/10/2016
+	 * Last modified: 16/01/2017
 	 */
 	private final DistanceMeasures distComputer = new DistanceMeasures();	// computer for distance measures
 	private final int nil = -100;					// constant for not available								
@@ -41,21 +41,21 @@ public class ClassifierNNED {
 	
 	private double errorRate;						// error rate 
 	private double distComputation = 0;				// distance computations
-	private double averageQueryTime = 0;				// average query time
-	private double[] distance1NN;							// distance recorded for each query
-	private int[] index1NN;									// nearest neighbour index for each query
+	private double averageQueryTime = 0;			// average query time
+	private double[] distance1NN;					// distance recorded for each query
+	private int[] index1NN;							// nearest neighbour index for each query
 	
-	private int bsfIndex;									// best so far nearest neighbour index
-	private double bsfDist;									// best so far distance
+	private int bsfIndex;							// best so far nearest neighbour index
+	private double bsfDist;							// best so far distance
 	
-	private double[] averageErrorPerQuery;					// average error per query
-	private double[] averageDistPerQuery;					// average distance computations per query
-	private double[] averageTimePerQuery;					// average time per query
+	private double[] averageErrorPerQuery;			// average error per query
+	private double[] averageDistPerQuery;			// average distance computations per query
+	private double[] averageTimePerQuery;			// average time per query
 	
-	private double[] errorPerQuery;							// error per query at different time intervals
-	private double[] timePerQuery;							// time per query at different time intervals
-	private double[] distPerQuery;							// distance computations per query at different time intervals
-	private int[] seenSoFarPerQuery;						// number of time series seen so far
+	private double[] errorPerQuery;					// error per query at different time intervals
+	private double[] timePerQuery;					// time per query at different time intervals
+	private double[] distPerQuery;					// distance computations per query at different time intervals
+	private int[] seenSoFarPerQuery;				// number of time series seen so far
 	
 	public ClassifierNNED(){}
 	
