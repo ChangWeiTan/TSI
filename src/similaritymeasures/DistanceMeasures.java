@@ -23,7 +23,7 @@ public class DistanceMeasures {
 	/* Distance Measures
 	 * This is a class for all the distance measures used
 	 * 
-	 * Last modified: 12/01/2017
+	 * Last modified: 14/01/2017
 	 */
 	private final static DTW dtwComputer = new DTW();
 	private final static LB_Keogh lbKeoghComputer = new LB_Keogh();
@@ -71,22 +71,6 @@ public class DistanceMeasures {
 	
 	public final double lb_keogh(final double[] C) {
 		return lbKeoghComputer.compute(C);
-	}
-	
-	public final double[][] envelope(final double[] Q, final double[] C, final int w) {
-		return lbKeoghComputer.envelope(Q, C, w);
-	}
-	
-	public final double[][] envelope(final double[] Q, final ArrayList<double[]> C, final int w) {
-		return lbKeoghComputer.envelope(Q, C, w);
-	}
-	
-	public final double[][] envelope(final double[] Q, final double[] C, final int w, final double[][] W) {
-		return lbKeoghComputer.envelope(Q, C, w, W);
-	}
-	
-	public final double[][] envelope(final double[] Q, final  ArrayList<double[]> C, final int w, final double[][] W) {
-		return lbKeoghComputer.envelope(Q, C, w, W);
 	}
 	
 	public final double[][] envelope(final double[] Q, final int w) {

@@ -23,39 +23,32 @@ public class DTW {
 	/* DTW
 	 * This is a class for Dynamic Time Warping (DTW)
 	 * 
-	 * Last modified: 12/01/2017
+	 * Last modified: 14/01/2017
 	 */
-	private static final Tools tools = new Tools();					// tools for the functions
-	private static final int maxSeqLen = 3000;						// maximum sequence length
+	private static final Tools tools = new Tools();	// tools for the functions
+	private static final int maxSeqLen = 3000;		// maximum sequence length
 	private static double[][] D = new double[maxSeqLen][maxSeqLen];	// cost matrix
-	private static long distComputation = 0;						// distance computations
+	private static long distComputation = 0;		// distance computations
 	
 	public final double compute(final double[] Q, final double[] C) {
-		/* Computes standard DTW distance
-		 * Inputs: 
-		 * 	Q 	: Query time series
-		 * 	C	: Compare time series
-		 * Output:
-		 * 	dtw	: DTW distance 
-		 */
 		final int nq = Q.length;	// length of query
 		final int nc = C.length;	// length of compare
 		int i, j;					// for loops counter
 		double cost, temp;			// temporary variables
 				
-		D[0][0] = tools.distanceTo(Q[0], C[0]);
+		D[0][0] = tools.squaredEuclidean(Q[0], C[0]);
 				
 		for (i = 1; i < nq; i++) {
-			D[i][0] = D[i-1][0] + tools.distanceTo(Q[i], C[0]);
+			D[i][0] = D[i-1][0] + tools.squaredEuclidean(Q[i], C[0]);
 		}
 		for (j = 1; j < nc; j++) {
-			D[0][j] = D[0][j-1] + tools.distanceTo(Q[0], C[j]);
+			D[0][j] = D[0][j-1] + tools.squaredEuclidean(Q[0], C[j]);
 		}
 		
 		for (i = 1; i < nq; i++) {
 			for (j = 1; j < nc; j++) {
-				cost = tools.distanceTo(Q[i], C[j]);
-				temp = tools.Min3(D[i-1][j-1],D[i-1][j],D[i][j-1]);
+				cost = tools.squaredEuclidean(Q[i], C[j]);
+				temp = tools.min3(D[i-1][j-1],D[i-1][j],D[i][j-1]);
 				D[i][j] = cost + temp;
 			}
 		}
@@ -65,32 +58,24 @@ public class DTW {
 	}
 	
 	public final double compute(final double[] Q, final double[] C, final double[][] D) {
-		/* Computes standard DTW distance
-		 * Inputs: 
-		 * 	Q 	: Query time series
-		 * 	C	: Compare time series
-		 * 	D	: Cost matrix
-		 * Output:
-		 * 	dtw	: DTW distance 
-		 */
 		final int nq = Q.length;	// length of query
 		final int nc = C.length;	// length of compare
 		int i, j;					// for loops counter
 		double cost, temp;			// temporary variables
 		
-		D[0][0] = tools.distanceTo(Q[0], C[0]);
+		D[0][0] = tools.squaredEuclidean(Q[0], C[0]);
 				
 		for (i = 1; i < nq; i++) {
-			D[i][0] = D[i-1][0] + tools.distanceTo(Q[i], C[0]);
+			D[i][0] = D[i-1][0] + tools.squaredEuclidean(Q[i], C[0]);
 		}
 		for (j = 1; j < nc; j++) {
-			D[0][j] = D[0][j-1] + tools.distanceTo(Q[0], C[j]);
+			D[0][j] = D[0][j-1] + tools.squaredEuclidean(Q[0], C[j]);
 		}
 		
 		for (i = 1; i < nq; i++) {
 			for (j = 1; j < nc; j++) {
-				cost = tools.distanceTo(Q[i], C[j]);
-				temp = tools.Min3(D[i-1][j-1],D[i-1][j],D[i][j-1]);
+				cost = tools.squaredEuclidean(Q[i], C[j]);
+				temp = tools.min3(D[i-1][j-1],D[i-1][j],D[i][j-1]);
 				D[i][j] = cost + temp;
 			}
 		}
@@ -100,14 +85,6 @@ public class DTW {
 	}
 	
 	public final double compute(final double[] Q, final double[] C, final int W) {
-		/* Computes standard DTW distance
-		 * Inputs: 
-		 * 	Q 	: Query time series
-		 * 	C	: Compare time series
-		 * 	W	: Warping window
-		 * Output:
-		 * 	dtw	: DTW distance 
-		 */
 		final int nq = Q.length;					// length of query
 		final int nc = C.length;					// length of compare
 		final int w = Math.max(W, Math.abs(nq-nc));	// warping window
@@ -116,17 +93,17 @@ public class DTW {
 		int i, j, jStart, jStop;					// counters
 		double cost, temp;							// temporary variables
 				
-		D[0][0] = tools.distanceTo(Q[0], C[0]);
+		D[0][0] = tools.squaredEuclidean(Q[0], C[0]);
 		distComputation = 1;
 		
 		for (i = 1; i < mq; i++) {
-			D[i][0] = D[i-1][0] + tools.distanceTo(Q[i], C[0]);
+			D[i][0] = D[i-1][0] + tools.squaredEuclidean(Q[i], C[0]);
 		}
 		if (i < nq)
 			D[i][0] = Double.POSITIVE_INFINITY;
 		
 		for (j = 1; j < mc; j++) {
-			D[0][j] = D[0][j-1] + tools.distanceTo(Q[0], C[j]);
+			D[0][j] = D[0][j-1] + tools.squaredEuclidean(Q[0], C[j]);
 		}
 		if (j < nc)
 			D[0][j] = Double.POSITIVE_INFINITY;
@@ -138,8 +115,8 @@ public class DTW {
 			jStop = Math.min(nc, i+w+1);
 			
 			for (j = jStart; j < jStop; j++) {
-				cost = tools.distanceTo(Q[i], C[j]);
-				temp = tools.Min3(D[i - 1][j - 1],D[i - 1][j],D[i][j - 1]);
+				cost = tools.squaredEuclidean(Q[i], C[j]);
+				temp = tools.min3(D[i - 1][j - 1],D[i - 1][j],D[i][j - 1]);
 				D[i][j] = cost + temp;
 				distComputation++;
 			}
@@ -153,15 +130,6 @@ public class DTW {
 	}
 	
 	public final double compute(final double[] Q, final double[] C, final int W, final double[][] D) {
-		/* Computes
-		 * Inputs: 
-		 * 	Q 	: Query time series
-		 * 	C	: Compare time series
-		 * 	W	: Warping window
-		 * 	D	: Cost matrix
-		 * Output:
-		 * 	dtw	: DTW distance 
-		 */
 		final int nq = Q.length;					// length of query
 		final int nc = C.length;					// length of compare
 		final int w = Math.max(W, Math.abs(nq-nc));	// warping window
@@ -170,17 +138,17 @@ public class DTW {
 		int i, j, jStart, jStop;					// counters
 		double cost, temp;							// temporary variables
 				
-		D[0][0] = tools.distanceTo(Q[0], C[0]);
+		D[0][0] = tools.squaredEuclidean(Q[0], C[0]);
 		distComputation = 1;
 		
 		for (i = 1; i < mq; i++) {
-			D[i][0] = D[i-1][0] + tools.distanceTo(Q[i], C[0]);
+			D[i][0] = D[i-1][0] + tools.squaredEuclidean(Q[i], C[0]);
 		}
 		if (i < nq)
 			D[i][0] = Double.POSITIVE_INFINITY;
 		
 		for (j = 1; j < mc; j++) {
-			D[0][j] = D[0][j-1] + tools.distanceTo(Q[0], C[j]);
+			D[0][j] = D[0][j-1] + tools.squaredEuclidean(Q[0], C[j]);
 		}
 		if (j < nc)
 			D[0][j] = Double.POSITIVE_INFINITY;
@@ -192,8 +160,8 @@ public class DTW {
 			jStop = Math.min(nc, i+w+1);
 			
 			for (j = jStart; j < jStop; j++) {
-				cost = tools.distanceTo(Q[i], C[j]);
-				temp = tools.Min3(D[i - 1][j - 1],D[i - 1][j],D[i][j - 1]);
+				cost = tools.squaredEuclidean(Q[i], C[j]);
+				temp = tools.min3(D[i - 1][j - 1],D[i - 1][j],D[i][j - 1]);
 				D[i][j] = cost + temp;
 				distComputation++;
 			}
