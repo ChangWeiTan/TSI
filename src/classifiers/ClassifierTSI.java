@@ -127,7 +127,7 @@ public class ClassifierTSI {
 			final int[] clusterIndex = new int[data.size()];		// index of each cluster wrt dataset [1:N(1), N(1)+1:N(2), ... N(K-1):N(K)]
 			
 			final KMeansDTW kmeans = new KMeansDTW();
-			final double[][] centroids = kmeans.compute(branchFactor, data, dataClass, w, Imax, nbDataInClusters, clusterIndex);
+			final double[][] centroids = kmeans.compute(branchFactor, data, dataClass, dataIndex, w, Imax, nbDataInClusters, clusterIndex);
 			
 			int jStart = 0;				// counters to find the data in each cluster
 
