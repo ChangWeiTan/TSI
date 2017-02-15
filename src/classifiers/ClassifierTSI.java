@@ -29,11 +29,11 @@ public class ClassifierTSI {
 	/* Time Series Indexing (TSI) Classifier
 	 * This is a class for Time Series Indexing (TSI) classifier
 	 * 
-	 * Last modified: 16/01/2017
+	 * Last modified: 15/02/2017
 	 */
 	private final DistanceMeasures distComputer = new DistanceMeasures();	// computer for distance measures
 	private final Tools tools = new Tools();		// tools for the functions
-	private final int maxPQSize = 10000;			// maximum size for priority queue
+	private final int maxPQSize = 1000000;			// maximum size for priority queue
 	private final int nil = -100;					// constant for not available
 	private int printInterval;						// interval for printing
 	private int steps;								// steps to record error (steps=1, means record error for each training example)
@@ -105,6 +105,7 @@ public class ClassifierTSI {
 		steps = step;
 		intervals = stepSize;
 		printInterval = (int) (0.1 * trainingDatasetSize);
+		printInterval = 1;
 		nbTimeseriesSeen = 0;
 		distComputation = 0;
 	}
@@ -438,7 +439,9 @@ public class ClassifierTSI {
 						}
 						// record results before seeing the first time series
 						recordPreResults(bestClass);
-					} 
+					} else {
+						distances[index[i]] = lbDistances[i];
+					}
 				}
 				
 				if (nbTimeseriesSeen < nbTimeseriesToExamine) {
