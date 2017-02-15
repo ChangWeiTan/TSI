@@ -29,12 +29,12 @@ public class SITS_TSI {
 		/* L_SITS_TSI
 		 * This is a class for TSI Experiment on SITS dataset
 		 * 
-		 * Last modified: 14/01/2017
+		 * Last modified: 15/02/2017
 		 */
 		final Tools tools = new Tools();
 		String projectPath = "";
 		String datasetName = "SITS1M_fold1";	
-		int K = 1000;
+		int K = 3;
 		int L = 5;
 		int Imax = 10;
 		int k = 1;			
@@ -80,7 +80,7 @@ public class SITS_TSI {
 			ArrayList<double[]> trainingDataset = SITS.TrainSet();
 			ArrayList<Integer> trainingDatasetClass = SITS.ClassTrain();
 			ArrayList<Integer> trainingDatasetIndex = SITS.IndexTrain();
-			final int[] trainingRandomIndex = SITS.randomize(trainingDataset, trainingDatasetClass, trainingDatasetIndex);
+			ArrayList<Integer> trainingRandomIndex = SITS.randomize2(trainingDataset, trainingDatasetClass, trainingDatasetIndex);
 			trainingDataset = SITS.extractDataset(trainingDataset, trainingRandomIndex);
 			trainingDatasetClass = SITS.extractLabel(trainingDatasetClass, trainingRandomIndex);
 			
